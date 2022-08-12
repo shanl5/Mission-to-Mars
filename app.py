@@ -24,6 +24,7 @@ mongo = PyMongo(app)
 @app.route("/")
 def index():
     mars = mongo.db.mars.find_one()
+    # mars = mongo.db.mars_app.find_one()
     return render_template("index.html", mars=mars)
 
 # Next, the scraping route
@@ -32,6 +33,7 @@ def index():
 @app.route("/scrape")
 def scrape():
     mars = mongo.db.mars
+    # mars = mongo.db.mars_app
     mars_data = scraping.scrape_all()
     mars.update_one({}, {"$set":mars_data}, upsert=True)
     return redirect('/', code=302)
