@@ -37,6 +37,7 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
+        "hemispheres": hemispheres(browser),
         "last_modified": dt.datetime.now()
     }
 
@@ -198,6 +199,115 @@ def mars_facts():
     # Convert dataframe into HTML format, add bootstrap
     # return df.to_html()
     return df.to_html(classes="table table-striped")
+
+########################################################################################################
+
+def hemispheres(browser):
+
+    # 1. Use browser to visit the URL 
+    url = 'https://marshemispheres.com/'
+
+    browser.visit(url)
+
+    # 2. Create a list to hold the images and titles.
+    hemisphere_image_urls = []
+
+    # 3. Write code to retrieve the image urls and titles for each hemisphere.
+    # a) Parse the html...
+    html = browser.html
+    html_soup = soup(html, "html.parser")
+
+    img_parent_container = html_soup.find_all("div", class_="item")
+
+    for result in img_parent_container:
+        # empty hemispheres dictionary   
+        hemispheres = {}
+        
+        # variable to hold full url for image page
+        img_page = url + result.a['href']
+    #     browser.visit(img_page)
+        
+        # click to navigate from main page to specific image page
+        browser.find_by_tag("h3").click()
+
+        # refresh browser with new image page address
+        browser.visit(img_page)
+        
+    #     link_soup = soup(browser.html, "html.parser")
+        
+        try:
+            
+    #         img_url = url + link_soup.find("div", class_="downloads").a["href"]
+    #         print(img_url)
+            
+            ## print(result)        
+            
+            # can find list of Splinter browser methods (to find elements) in 
+            # https: //splinter.readthedocs.io/_/downloads/en/latest/pdf/
+            # documentation sections 2.5.3 and 2.5.4
+            # 
+            img_url = browser.find_by_text("Sample")["href"]
+            ## print(img_url)
+
+            img_title = browser.find_by_tag("h2").text
+            ## print(img_title)        
+
+            hemispheres = {"img_url": img_url,
+                           "title": img_title
+                          }
+            
+            hemisphere_image_urls.append({"img_url": img_url,
+                                          "title": img_title
+                                         }
+                                        )
+            
+            # with Splinter methods, navigate back to original url
+            browser.find_by_text("Back").click()
+
+    #         # and from there 
+    #         browser.find_by_tag("h3").click()
+            
+        except AttributeError as err:
+            print(err)
+
+    if len(hemispheres) > 0 and (hemispheres not in hemisphere_image_urls):
+        hemisphere_image_urls.append(hemispheres)
+
+    # 4. Return the list that holds the dictionary of each image url and title.
+    return hemisphere_image_urls
+
+###########################################################################################
+# ----------------------------------------------------------------------------------------
+# as is, this function is not called anywhere
+def thumbnails(browser):
+    # . Use browser to visit the URL 
+    url = 'https://marshemispheres.com/'
+   
+    # refresh to original url page
+    browser.visit(url)
+
+    # ii. Create a list to hold the thumbnails and titles.
+    hemisphere_thumbs = []
+
+    # iii. Write code to retrieve the thumbnail urls and titles for each hemisphere.
+    # a) Parse the html...
+    html = browser.html
+    html_soup = soup(html, "html.parser")
+
+    # img_parent_container = html_soup.find_all("div", class_="item")
+    try:
+        img_thumb_cont = html_soup.find_all("img", class_="thumb")
+        
+        for img in range(len(img_thumb_cont)):
+            hemisphere_thumbs.append({'img_url': url + img_thumb_cont[img].get('src'),
+                                      'title': img_thumb_cont[img].get('alt')})
+        
+    except AttributeError as err:
+        print(f'{err} occurred...continuing.')
+
+    # iv. Return the list that holds the dictionary of each thumbnail url and title.
+    return hemisphere_thumbs
+# ----------------------------------------------------------------------------------------
 
 #.# commented-out code line below add to `scrape_all()` function
 # browser.quit()
