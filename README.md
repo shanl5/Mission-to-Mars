@@ -39,3 +39,7 @@ Installation challenges encountered (solved by TA J Caro, instructional team):
 Challenge issues:
 - Website became unavailable
 - order of precedence of Bootstrap / CSS elements
+
+>UPDATE: (2022-08-21) - add webpage image snapshot after learning more about Bootstrap / CSS
+><img src="Resources/images/Page_snap.png" width="40%">
+
